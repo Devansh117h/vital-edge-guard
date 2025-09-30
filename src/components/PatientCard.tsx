@@ -1,15 +1,17 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Patient } from '@/types/health';
-import { Activity, Thermometer, Droplet, Wind, AlertTriangle } from 'lucide-react';
+import { Activity, Thermometer, Droplet, Wind, AlertTriangle, Edit } from 'lucide-react';
 
 interface PatientCardProps {
   patient: Patient;
   onClick: () => void;
+  onEdit?: () => void;
 }
 
-const PatientCard: React.FC<PatientCardProps> = ({ patient, onClick }) => {
+const PatientCard: React.FC<PatientCardProps> = ({ patient, onClick, onEdit }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'critical':
@@ -36,18 +38,33 @@ const PatientCard: React.FC<PatientCardProps> = ({ patient, onClick }) => {
     >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex-1">
             <CardTitle className="text-lg font-semibold text-card-foreground">
               {patient.name}
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              {patient.roomNumber} • Age {patient.age}
+              {patient.roomNumber} • Age {patient.age} • ID: {patient.id}
             </p>
           </div>
           <div className="flex flex-col gap-2 items-end">
-            <Badge className={getStatusColor(patient.status)}>
-              {getStatusText(patient.status)}
-            </Badge>
+            <div className="flex items-center gap-2">
+              {onEdit && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit();
+                  }}
+                  className="h-8 w-8 p-0 hover:bg-muted"
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+              )}
+              <Badge className={getStatusColor(patient.status)}>
+                {getStatusText(patient.status)}
+              </Badge>
+            </div>
             {patient.anomalyDetected && (
               <Badge className="bg-status-anomaly-bg text-status-anomaly border-status-anomaly">
                 <AlertTriangle className="w-3 h-3 mr-1" />

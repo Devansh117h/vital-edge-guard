@@ -4,15 +4,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import PatientCard from '@/components/PatientCard';
 import PatientDetailModal from '@/components/PatientDetailModal';
+import PatientFormModal from '@/components/PatientFormModal';
+import PatientFilters from '@/components/PatientFilters';
 import ModelMetricsPanel from '@/components/ModelMetricsPanel';
 import { Patient, ModelMetrics } from '@/types/health';
 import { generateMockPatients, generateMockVitals, classifyPatientStatus, detectAnomalies } from '@/utils/mockData';
-import { Activity, AlertTriangle, Users, Stethoscope, Pause, Play } from 'lucide-react';
+import { Activity, AlertTriangle, Users, Stethoscope, Pause, Play, Plus, UserPlus } from 'lucide-react';
 
 const Index = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [isSimulating, setIsSimulating] = useState(true);
   
   // Mock ML metrics
@@ -26,7 +32,9 @@ const Index = () => {
 
   // Initialize patients
   useEffect(() => {
-    setPatients(generateMockPatients());
+    const initialPatients = generateMockPatients();
+    setPatients(initialPatients);
+    setFilteredPatients(initialPatients);
   }, []);
 
   // Real-time simulation
@@ -57,7 +65,31 @@ const Index = () => {
 
   const handlePatientClick = (patient: Patient) => {
     setSelectedPatient(patient);
-    setIsModalOpen(true);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleAddPatient = () => {
+    setEditingPatient(null);
+    setFormMode('add');
+    setIsFormModalOpen(true);
+  };
+
+  const handleEditPatient = (patient: Patient) => {
+    setEditingPatient(patient);
+    setFormMode('edit');
+    setIsFormModalOpen(true);
+  };
+
+  const handleSavePatient = (savedPatient: Patient) => {
+    if (formMode === 'add') {
+      const newPatients = [...patients, savedPatient];
+      setPatients(newPatients);
+      setFilteredPatients(newPatients);
+    } else {
+      const updatedPatients = patients.map(p => p.id === savedPatient.id ? savedPatient : p);
+      setPatients(updatedPatients);
+      setFilteredPatients(updatedPatients);
+    }
   };
 
   const getStatusCounts = () => {
@@ -70,7 +102,9 @@ const Index = () => {
   };
 
   const statusCounts = getStatusCounts();
-  const criticalAndWarningPatients = patients
+  
+  // Use filtered patients for display
+  const criticalAndWarningPatients = filteredPatients
     .filter(p => p.status === 'critical' || p.status === 'warning' || p.anomalyDetected)
     .sort((a, b) => {
       if (a.status === 'critical' && b.status !== 'critical') return -1;
@@ -80,7 +114,7 @@ const Index = () => {
       return 0;
     });
 
-  const normalPatients = patients.filter(p => p.status === 'normal' && !p.anomalyDetected);
+  const normalPatients = filteredPatients.filter(p => p.status === 'normal' && !p.anomalyDetected);
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -97,6 +131,13 @@ const Index = () => {
             </p>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              onClick={handleAddPatient}
+              className="flex items-center gap-2 bg-primary hover:bg-primary-dark"
+            >
+              <UserPlus className="w-4 h-4" />
+              Add Patient
+            </Button>
             <Button
               variant={isSimulating ? "outline" : "default"}
               onClick={() => setIsSimulating(!isSimulating)}
@@ -164,6 +205,12 @@ const Index = () => {
         </Card>
       </div>
 
+      {/* Patient Filters */}
+      <PatientFilters 
+        patients={patients} 
+        onFilteredPatientsChange={setFilteredPatients}
+      />
+
       <div className="grid grid-cols-4 gap-6">
         {/* Patient Monitoring Grid */}
         <div className="col-span-3 space-y-6">
@@ -180,6 +227,7 @@ const Index = () => {
                     key={patient.id}
                     patient={patient}
                     onClick={() => handlePatientClick(patient)}
+                    onEdit={() => handleEditPatient(patient)}
                   />
                 ))}
               </div>
@@ -199,6 +247,7 @@ const Index = () => {
                     key={patient.id}
                     patient={patient}
                     onClick={() => handlePatientClick(patient)}
+                    onEdit={() => handleEditPatient(patient)}
                   />
                 ))}
               </div>
@@ -218,11 +267,23 @@ const Index = () => {
       {/* Patient Detail Modal */}
       <PatientDetailModal
         patient={selectedPatient}
-        isOpen={isModalOpen}
+        isOpen={isDetailModalOpen}
         onClose={() => {
-          setIsModalOpen(false);
+          setIsDetailModalOpen(false);
           setSelectedPatient(null);
         }}
+      />
+
+      {/* Patient Form Modal */}
+      <PatientFormModal
+        patient={editingPatient}
+        isOpen={isFormModalOpen}
+        onClose={() => {
+          setIsFormModalOpen(false);
+          setEditingPatient(null);
+        }}
+        onSave={handleSavePatient}
+        mode={formMode}
       />
     </div>
   );
