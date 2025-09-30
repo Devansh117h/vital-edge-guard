@@ -2,41 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Medical-grade design system for health monitoring
+All colors MUST be HSL for consistent theming.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Medical interface backgrounds */
+    --background: 210 25% 98%;
+    --foreground: 210 15% 15%;
+    --surface: 210 20% 99%;
+    --surface-secondary: 210 25% 96%;
 
+    /* Card and container styling */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 210 15% 15%;
+    --card-border: 210 15% 90%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Medical primary - professional blue */
+    --primary: 210 80% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 210 75% 85%;
+    --primary-dark: 210 85% 35%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Status colors for medical alerts */
+    --status-normal: 145 65% 45%;
+    --status-normal-bg: 145 45% 95%;
+    --status-warning: 35 85% 55%;
+    --status-warning-bg: 35 75% 95%;
+    --status-critical: 0 75% 55%;
+    --status-critical-bg: 0 65% 95%;
+    --status-anomaly: 270 65% 55%;
+    --status-anomaly-bg: 270 45% 95%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Data visualization colors */
+    --chart-heart-rate: 0 75% 55%;
+    --chart-respiration: 145 65% 45%;
+    --chart-oxygen: 210 80% 55%;
+    --chart-temperature: 35 85% 55%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Secondary elements */
+    --secondary: 210 15% 92%;
+    --secondary-foreground: 210 15% 25%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Muted elements */
+    --muted: 210 15% 94%;
+    --muted-foreground: 210 10% 45%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Accent for highlights */
+    --accent: 210 75% 95%;
+    --accent-foreground: 210 80% 45%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders and inputs */
+    --border: 210 15% 88%;
+    --input: 210 15% 96%;
+    --ring: 210 80% 45%;
 
-    --radius: 0.5rem;
+    /* Radius for medical interface */
+    --radius: 0.375rem;
 
     --sidebar-background: 0 0% 98%;
 
